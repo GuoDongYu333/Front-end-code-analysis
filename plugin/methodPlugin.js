@@ -1,3 +1,8 @@
+/**
+ * 判断节点是否是函数调用（不是函数声明），通过判断父节点的位置和当前节点是否一致来实现
+ * @param  analysisContext
+ * @returns mapName,checkFun，afterHook
+ */
 export const methodPlugin = (analysisContext) => {
   const mapName = "methodMap";
   analysisContext[mapName] = {};

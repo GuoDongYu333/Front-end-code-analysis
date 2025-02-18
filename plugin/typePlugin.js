@@ -1,3 +1,8 @@
+/**
+ * 检查类型引用节点
+ * @param analysisContext 
+ * @returns 
+ */
 export const typePlugin = (analysisContext) => {
   const mapName = "typeMap";
   analysisContext[mapName] = {};

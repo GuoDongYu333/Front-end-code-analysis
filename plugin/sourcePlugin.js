@@ -1,3 +1,8 @@
+/**
+ * 根据标准进行打分，扣分项分别是使用黑名单api，使用import * as xxx 的使用方式，使用window，document，history，location，进行ast转化时出现错误
+ * @param  analysisContext
+ * @returns
+ */
 export const sourcePlugin = (analysisContext) => {
   const { pluginsQueue, browserQueue, importItemMap, parseErrorInfos } =
     analysisContext;
@@ -21,7 +26,7 @@ export const sourcePlugin = (analysisContext) => {
 
   Object.keys(importItemMap).forEach((item) => {
     if (importItemMap[item].callOrigin == "*") {
-      score = score - 2;
+      score -= 2;
       message.push("import * as " + item + " 属于非建议导入方式，建议修改");
     }
   });

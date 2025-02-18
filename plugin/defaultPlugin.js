@@ -1,8 +1,11 @@
-exports.defaultPlugin = function (analysisContext) {
+/**
+ * 记录调用信息
+ * @param analysisContext 
+ * @returns 
+ */
+export const defaultPlugin =  (analysisContext) => {
   const mapName = "apiMap";
-  // 在分析实例上下文挂载副作用
   analysisContext[mapName] = {};
-
   function isApiCheck(
     context,
     apiName,
