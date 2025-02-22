@@ -2,6 +2,9 @@ import program from "commander";
 import path from "path";
 import fs from "fs";
 import chalk from "chalk";
+import { rmDir, mkDir } from "../lib/file";
+import { REPORTDEFAULTDIR, VUETEMPTSDIR } from "../lib/constant";
+import { writeDiagnosisReport, writeReport } from "../lib/report";
 
 program
   .command("analysis")
@@ -46,7 +49,74 @@ program
           if (!isParamsError) {
             if (!isCodePathError) {
               if (config && config.analysisTarget) {
-                //TODO 完成核心逻辑
+                try {
+                  rmDir(config.reportDir || REPORTDEFAULTDIR);
+                  rmDir(VUETEMPTSDIR);
+                  if (config.isScanVue) {
+                    mkDir(VUETEMPTSDIR);
+                  }
+                  //TODO codeAnalysis 分析代码核心部分
+                  const { report, diagnosisInfos } = await codeAnalysis(config);
+                  writeReport(config.reportDir || "report", report);
+                  writeDiagnosisReport(
+                    config.reportDir || "report",
+                    diagnosisInfos
+                  );
+                  rmDir(VUETEMPTSDIR);
+                  if (
+                    config.scorePlugin &&
+                    config.alarmThreshold &&
+                    typeof config.alarmThreshold === "number" &&
+                    config.alarmThreshold > 0
+                  ) {
+                    if (
+                      report.scoreMap.score &&
+                      report.scoreMap.score < config.alarmThreshold
+                    ) {
+                      console.log(
+                        chalk.red(
+                          "\n" +
+                            "代码得分：" +
+                            report.scoreMap.score +
+                            ", 不合格"
+                        )
+                      );
+                    }
+                    if (report.scoreMap.message.length > 0) {
+                      // 输出代码建议信息
+                      console.log(chalk.yellow("\n" + "优化建议："));
+                      report.scoreMap.message.forEach((element, index) => {
+                        console.log(chalk.yellow(index + 1 + ". " + element));
+                      });
+                    } else {
+                      console.log(
+                        chalk.green("\n" + "代码得分：" + report.scoreMap.score)
+                      ); // 输出代码分数信息
+                      if (report.scoreMap.message.length > 0) {
+                        // 输出代码建议信息
+                        console.log(chalk.yellow("\n" + "优化建议："));
+                        report.scoreMap.message.forEach((element, index) => {
+                          console.log(chalk.yellow(index + 1 + ". " + element));
+                        });
+                      }
+                    }
+                  } else if (config.scorePlugin) {
+                    console.log(
+                      chalk.green("\n" + "代码得分：" + report.scoreMap.score)
+                    );
+                    if (report.scoreMap.message.length > 0) {
+                      // 输出代码建议信息
+                      console.log(chalk.yellow("\n" + "优化建议："));
+                      report.scoreMap.message.forEach((element, index) => {
+                        console.log(chalk.yellow(index + 1 + ". " + element));
+                      });
+                    }
+                  }
+                } catch (error) {
+                  rmDir(VUETEMPTSDIR);
+                  console.log(chalk.red(error.stack)); // 输出错误信息
+                  process.exit(1); // 错误退出进程
+                }
               } else {
                 console.log(
                   chalk.red("error: 配置文件中缺少必填配置项analysisTarget")
@@ -61,6 +131,9 @@ program
             console.log(chalk.red("error：scanSource参数选项必填属性不能为空"));
           }
         } else {
+          console.log(
+            chalk.red("error: 配置文件中必填配置项scanSource不能为空")
+          );
         }
       } else {
         console.log(chalk.red("error：缺少analysis.config.js文件"));
@@ -69,3 +142,5 @@ program
       console.log(chalk.red(error.stack));
     }
   });
+
+program.parse(process.argv);
