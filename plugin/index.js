@@ -1,5 +1,5 @@
-export { defaultPlugin } from "./defaultPlugin";
-export { browserPlugin } from "./browserPlugin";
-export { methodPlugin } from "./methodPlugin";
-export { typePlugin } from "./typePlugin";
-export { sourcePlugin } from "./sourcePlugin";
+export { defaultPlugin } from "./defaultPlugin.js";
+export { browserPlugin } from "./browserPlugin.js";
+export { methodPlugin } from "./methodPlugin.js";
+export { typePlugin } from "./typePlugin.js";
+export { sourcePlugin } from "./sourcePlugin.js";
