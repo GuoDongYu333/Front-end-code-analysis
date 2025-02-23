@@ -1,10 +1,10 @@
-import program from "commander";
+import { program } from "commander";
 import path from "path";
 import fs from "fs";
 import chalk from "chalk";
-import { rmDir, mkDir } from "../lib/file";
-import { REPORTDEFAULTDIR, VUETEMPTSDIR } from "../lib/constant";
-import { writeDiagnosisReport, writeReport } from "../lib/report";
+import { rmDir, mkDir } from "../lib/file.js";
+import { REPORTDEFAULTDIR, VUETEMPTSDIR } from "../lib/constant.js";
+import { writeDiagnosisReport, writeReport } from "../lib/report.js";
 
 program
   .command("analysis")
