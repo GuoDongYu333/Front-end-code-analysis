@@ -1,5 +1,6 @@
 /**
  * 判断节点是否是函数调用（不是函数声明），通过判断父节点的位置和当前节点是否一致来实现
+ * 判断是否是入参，通过判断是否在arguments中实现，也就是通过判断baseNode的pos/end是否和baseNode的parent的expression的pos/end一致来判断
  * @param  analysisContext
  * @returns mapName,checkFun，afterHook
  */
