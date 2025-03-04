@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { program } from "commander";
 import path from "path";
 import fs from "fs";
@@ -5,16 +6,21 @@ import chalk from "chalk";
 import { rmDir, mkDir } from "../lib/file.js";
 import { REPORTDEFAULTDIR, VUETEMPTSDIR } from "../lib/constant.js";
 import { writeDiagnosisReport, writeReport } from "../lib/report.js";
+import { codeAnalysis } from "../lib/index.js";
 
 program
   .command("analysis")
   .description("analysis code and init report")
   .action(async () => {
     try {
+      // 获取配置文件路径
       const configPath = path.join(process.cwd(), "./analysis.config.js");
+
       const isConfigExist = fs.existsSync(configPath);
       if (isConfigExist) {
-        let config = require(configPath);
+        //读取配置文件
+        let config = (await import("../analysis.config.js")).default;
+        //判断是否有scanSource参数（需要检测的文件路径）
         if (
           config.scanSource &&
           Array.isArray(config.scanSource) &&
@@ -24,6 +30,7 @@ program
           let isCodePathError = false;
           let unExistDir = false;
           for (let i = 0; i < config.scanSource.length; i++) {
+            //scanSource参数选项必填属性不能为空
             if (
               !config.scanSource[i].name ||
               !config.scanSource[i].path ||
@@ -48,6 +55,7 @@ program
           }
           if (!isParamsError) {
             if (!isCodePathError) {
+              //是否有analysisTarget参数（需要检测的代码依赖项）
               if (config && config.analysisTarget) {
                 try {
                   rmDir(config.reportDir || REPORTDEFAULTDIR);
@@ -55,7 +63,6 @@ program
                   if (config.isScanVue) {
                     mkDir(VUETEMPTSDIR);
                   }
-                  //TODO codeAnalysis 分析代码核心部分
                   const { report, diagnosisInfos } = await codeAnalysis(config);
                   writeReport(config.reportDir || "report", report);
                   writeDiagnosisReport(
@@ -81,13 +88,15 @@ program
                             ", 不合格"
                         )
                       );
-                    }
-                    if (report.scoreMap.message.length > 0) {
-                      // 输出代码建议信息
-                      console.log(chalk.yellow("\n" + "优化建议："));
-                      report.scoreMap.message.forEach((element, index) => {
-                        console.log(chalk.yellow(index + 1 + ". " + element));
-                      });
+                      if (report.scoreMap.message.length > 0) {
+                        // 输出代码建议信息
+                        console.log(chalk.yellow("\n" + "优化建议："));
+                        report.scoreMap.message.forEach((element, index) => {
+                          console.log(chalk.yellow(index + 1 + ". " + element));
+                        });
+                      }
+                      console.log(chalk.red("\n" + "=== 触发告警 ===" + "\n")); // 输出告警信息
+                      process.exit(1); // 触发告警错误并结束进程
                     } else {
                       console.log(
                         chalk.green("\n" + "代码得分：" + report.scoreMap.score)

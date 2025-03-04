@@ -1,23 +1,24 @@
+import chalk from "chalk";
+
 /**
  * 根据标准进行打分，扣分项分别是使用黑名单api，使用import * as xxx 的使用方式，使用window，document，history，location，进行ast转化时出现错误
  * @param  analysisContext
  * @returns
  */
-export const sourcePlugin = (analysisContext) => {
-  const { pluginsQueue, browserQueue, importItemMap, parseErrorInfos } =
+export const scorePlugin = (analysisContext) => {
+  const { pluginQueue, browserQueue, importItemMap, parseErrorInfos } =
     analysisContext;
   const mapNames = browserQueue
     .map((item) => item.mapName)
-    .concat(pluginsQueue.map((item) => item.mapName));
-
-  let source = 100;
+    .concat(pluginQueue.map((item) => item.mapName));
+  let score = 100;
   let message = [];
 
   if (mapNames.length > 0) {
     mapNames.forEach((item) => {
       Object.keys(analysisContext[item]).forEach((sitem) => {
         if (analysisContext[item][sitem].isBlack) {
-          source -= 5;
+          score -= 5;
           message.push(sitem + "属于黑名单api，请勿使用");
         }
       });

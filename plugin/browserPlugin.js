@@ -3,6 +3,9 @@ export const browserPlugin = (analysisContext) => {
   analysisContext[mapName] = {};
   function isBrowserCheck(
     context,
+    tsCompiler,
+    node,
+    depth,
     apiName,
     filePath,
     projectName,
