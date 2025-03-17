@@ -1,6 +1,6 @@
-import { Base } from 'framework';
+import { Base } from "framework";
 export default class Connect extends Base {
-  private scope = 'email';
+  private scope = "email";
   private returnScopes = false;
   private xfbml = false;
   private static bPromise: Promise<any>;
@@ -8,7 +8,7 @@ export default class Connect extends Base {
     return {
       status: true,
       cookie: true,
-      xfbml: this.xfbml
+      xfbml: this.xfbml,
     };
   }
 
@@ -24,7 +24,7 @@ export default class Connect extends Base {
       .then(() => this.login(this.scope, this.returnScopes, authType))
       .then((response: any) => {
         const normalized: { [k: string]: string } = {
-          userId: response.userID
+          userId: response.userID,
         };
         if (response.grantedScopes) {
           normalized.grantedScopes = response.grantedScopes;
@@ -47,7 +47,7 @@ export default class Connect extends Base {
             });
           }
         },
-        { scope, return_scopes: returnScopes, auth_type: authType },
+        { scope, return_scopes: returnScopes, auth_type: authType }
       );
     });
   }

@@ -1,9 +1,11 @@
+import chalk from "chalk";
+
 /**
  * 记录调用信息
- * @param analysisContext 
- * @returns 
+ * @param analysisContext
+ * @returns
  */
-export const defaultPlugin =  (analysisContext) => {
+export const defaultPlugin = (analysisContext) => {
   const mapName = "apiMap";
   analysisContext[mapName] = {};
   function isApiCheck(
@@ -53,7 +55,7 @@ export const defaultPlugin =  (analysisContext) => {
         stack: e.stack,
       };
       context.addDiagnosisInfo(info);
-      return false; 
+      return false;
     }
   }
   return {

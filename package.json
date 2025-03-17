@@ -5,7 +5,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "ca": "./cli/index.js"
+    "ca": "./cli/index.js",
+    "analysis": "node ./cli/index.js analysis"
   },
   "keywords": [],
   "author": "",
